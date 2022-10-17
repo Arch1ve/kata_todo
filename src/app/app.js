@@ -1,22 +1,34 @@
-import React from "react";
+import React, { Component } from "react";
 import Header from "../header";
 import TaskList from "../task-list";
 import Footer from "../footer";
 
-const App = () => {
-  const todoData = [
-    { status: "completed", date: "", id: 1 },
-    { status: "editing", date: "", id: 2 },
-    { status: "", date: "", id: 3 },
-  ];
+export default class App extends Component {
+  maxId = 10;
 
-  return (
-    <section className="todoapp">
-      <Header />
-      <TaskList data={todoData} />
-      <Footer />
-    </section>
-  );
-};
+  state = {
+    todoData: [
+      { label: "Completed task", id: 1 },
+      { label: "Editing task", id: 2 },
+      { label: "task", id: 3 },
+    ],
+  };
 
-export default App;
+  deleteItem = (id) => {
+    this.setState(({ todoData }) => {
+      const i = todoData.findIndex((el) => el.id === id);
+
+      return { todoData: [...todoData.slice(0, i), ...todoData.slice(i + 1)] };
+    });
+  };
+
+  render() {
+    return (
+      <section className="todoapp">
+        <Header />
+        <TaskList data={this.state.todoData} onDeleted={this.deleteItem} />
+        <Footer />
+      </section>
+    );
+  }
+}
