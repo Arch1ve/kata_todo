@@ -1,9 +1,34 @@
-import React from "react";
+import React, { Component } from "react";
 
-const Edit = () => {
-  return (
-    <input type="text" className="edit" placeholder="Editing task"></input>
-  );
-};
+export default class Edit extends Component {
+  state = {
+    label: this.props.label,
+  };
 
-export default Edit;
+  onLabelChange = (e) => {
+    this.setState({
+      label: e.target.value,
+    });
+  };
+
+  onEnterPressed = (e) => {
+    if (e.key === "Enter") {
+      const text = this.state.label || "Unnamed task";
+      const { id } = this.props;
+      this.props.onLabelSubmitted(id, text);
+      this.props.stopEditing();
+    }
+  };
+
+  render() {
+    return (
+      <input
+        type="text"
+        className="edit"
+        value={this.state.label}
+        onChange={(e) => this.onLabelChange(e)}
+        onKeyDown={(e) => this.onEnterPressed(e)}
+      ></input>
+    );
+  }
+}

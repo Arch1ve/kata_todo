@@ -1,22 +1,24 @@
 import React, { Component } from "react";
+import "./task.css";
 import Edit from "../edit";
 
 export default class Task extends Component {
   state = {
-    done: false,
     editing: false,
   };
 
-  onDone = () => {
-    this.setState(({ done }) => {
-      return { done: !done };
-    });
+  onEdit = () => {
+    this.setState({ editing: true });
+  };
+
+  stopEditing = () => {
+    this.setState({ editing: false });
   };
 
   render() {
-    const onDeleted = this.props.onDeleted;
-    const { label } = this.props.data;
-    const { done, editing } = this.state;
+    const { label, onDeleted, onToggleDone, done, changeLabel, id } =
+      this.props;
+    const { editing } = this.state;
 
     let classNames = "";
     if (done) {
@@ -29,21 +31,26 @@ export default class Task extends Component {
     return (
       <li className={classNames}>
         <div className="view">
-          <input className="toggle" type="checkbox" />
+          <input
+            className="toggle"
+            type="checkbox"
+            checked={done}
+            onChange={onToggleDone}
+          />
           <label>
-            <span
-              className="description"
-              onClick={() => {
-                this.onDone();
-              }}
-            >
-              {label.charAt(0).toUpperCase() + label.slice(1)}
-            </span>
+            <span className="description">{label}</span>
           </label>
-          <button className="icon icon-edit" />
+          <button className="icon icon-edit" onClick={() => this.onEdit()} />
           <button className="icon icon-destroy" onClick={onDeleted} />
         </div>
-        {editing ? <Edit /> : null}
+        {editing ? (
+          <Edit
+            onLabelSubmitted={changeLabel}
+            stopEditing={this.stopEditing}
+            label={label}
+            id={id}
+          />
+        ) : null}
       </li>
     );
   }
