@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import "./footer.css";
 import TasksFilter from "../tasks-filter";
 
@@ -19,3 +20,17 @@ const Footer = ({ todo, clearCompleted, changeDisplay, display }) => {
 };
 
 export default Footer;
+
+Footer.defaultProps = {
+  todo: 0,
+  clearCompleted: () => {},
+  changeDisplay: () => {},
+  display: "All",
+};
+
+Footer.propTypes = {
+  todo: PropTypes.number,
+  display: PropTypes.string,
+  clearCompleted: PropTypes.func,
+  changeDisplay: PropTypes.func,
+};

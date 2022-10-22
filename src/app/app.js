@@ -32,6 +32,7 @@ export default class App extends Component {
       label,
       done: false,
       id: this.maxId++,
+      date: new Date(),
     };
   }
 
@@ -47,6 +48,7 @@ export default class App extends Component {
       const i = todoData.findIndex((el) => el.id === id);
       const copy = { ...todoData[i] };
       copy.label = text;
+      copy.date = new Date();
       return {
         todoData: [...todoData.slice(0, i), copy, ...todoData.slice(i + 1)],
       };

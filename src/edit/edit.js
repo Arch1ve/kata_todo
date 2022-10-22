@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 export default class Edit extends Component {
   state = {
@@ -28,7 +29,20 @@ export default class Edit extends Component {
         value={this.state.label}
         onChange={(e) => this.onLabelChange(e)}
         onKeyDown={(e) => this.onEnterPressed(e)}
+        autoFocus
       ></input>
     );
   }
 }
+
+Edit.defaultProps = {
+  onLabelSubmitted: () => {},
+  stopEditing: () => {},
+  id: -1,
+};
+
+Edit.propTypes = {
+  onLabelSubmitted: PropTypes.func,
+  stopEditing: PropTypes.func,
+  id: PropTypes.number,
+};

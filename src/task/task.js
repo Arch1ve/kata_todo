@@ -1,10 +1,13 @@
 import React, { Component } from "react";
+import formatDistanceToNow from "date-fns/formatDistanceToNow";
+import PropTypes from "prop-types";
 import "./task.css";
 import Edit from "../edit";
 
 export default class Task extends Component {
   state = {
     editing: false,
+    distance: formatDistanceToNow(this.props.date),
   };
 
   onEdit = () => {
@@ -13,6 +16,18 @@ export default class Task extends Component {
 
   stopEditing = () => {
     this.setState({ editing: false });
+  };
+
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick = () => {
+    this.setState({ distance: formatDistanceToNow(this.props.date) });
   };
 
   render() {
@@ -39,6 +54,7 @@ export default class Task extends Component {
           />
           <label>
             <span className="description">{label}</span>
+            <span className="created">{this.state.distance} ago</span>
           </label>
           <button className="icon icon-edit" onClick={() => this.onEdit()} />
           <button className="icon icon-destroy" onClick={onDeleted} />
@@ -55,3 +71,23 @@ export default class Task extends Component {
     );
   }
 }
+
+Task.defaultProps = {
+  label: "Unnamed task",
+  onDeleted: () => {},
+  onToggleDone: () => {},
+  changeLabel: () => {},
+  done: false,
+  id: 0,
+  date: new Date(),
+};
+
+Task.propTypes = {
+  label: PropTypes.string,
+  done: PropTypes.bool,
+  id: PropTypes.number,
+  date: PropTypes.object,
+  onDeleted: PropTypes.func,
+  onToggleDone: PropTypes.func,
+  changeLabel: PropTypes.func,
+};
