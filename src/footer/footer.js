@@ -1,10 +1,11 @@
-import React from "react";
-import PropTypes from "prop-types";
-import "./footer.css";
-import TasksFilter from "../tasks-filter";
+import React from 'react'
+import PropTypes from 'prop-types'
+
+import './footer.css'
+import TasksFilter from '../tasks-filter'
 
 const Footer = ({ todo, clearCompleted, changeDisplay, display }) => {
-  const strEnd = String(todo) !== "1" ? "s" : "";
+  const strEnd = String(todo) !== '1' ? 's' : ''
 
   return (
     <footer className="footer">
@@ -16,21 +17,21 @@ const Footer = ({ todo, clearCompleted, changeDisplay, display }) => {
         Clear completed
       </button>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
 
 Footer.defaultProps = {
   todo: 0,
   clearCompleted: () => {},
   changeDisplay: () => {},
-  display: "All",
-};
+  display: 'All',
+}
 
 Footer.propTypes = {
   todo: PropTypes.number,
   display: PropTypes.string,
   clearCompleted: PropTypes.func,
   changeDisplay: PropTypes.func,
-};
+}

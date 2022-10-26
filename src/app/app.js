@@ -1,31 +1,28 @@
-import React, { Component } from "react";
-import "./app.css";
-import NewTaskForm from "../new-task-form";
-import TaskList from "../task-list";
-import Footer from "../footer";
+import React, { Component } from 'react'
+
+import './app.css'
+import NewTaskForm from '../new-task-form'
+import TaskList from '../task-list'
+import Footer from '../footer'
 
 export default class App extends Component {
-  maxId = 0;
+  maxId = 0
 
   onToggleDone = (id) => {
     this.setState(({ todoData }) => {
-      const i = todoData.findIndex((el) => el.id === id);
-      const oldItem = todoData[i];
-      const newItem = { ...oldItem, done: !oldItem.done };
+      const i = todoData.findIndex((el) => el.id === id)
+      const oldItem = todoData[i]
+      const newItem = { ...oldItem, done: !oldItem.done }
       return {
         todoData: [...todoData.slice(0, i), newItem, ...todoData.slice(i + 1)],
-      };
-    });
-  };
+      }
+    })
+  }
 
   state = {
-    display: "All",
-    todoData: [
-      this.createTask("Completed task"),
-      this.createTask("Editing task"),
-      this.createTask("Active task"),
-    ],
-  };
+    display: 'All',
+    todoData: [this.createTask('Completed task'), this.createTask('Editing task'), this.createTask('Active task')],
+  }
 
   createTask(label) {
     return {
@@ -33,61 +30,61 @@ export default class App extends Component {
       done: false,
       id: this.maxId++,
       date: new Date(),
-    };
+    }
   }
 
   addItem = (text) => {
-    const newItem = this.createTask(text);
+    const newItem = this.createTask(text)
     this.setState(({ todoData }) => {
-      return { todoData: [...todoData, newItem] };
-    });
-  };
+      return { todoData: [...todoData, newItem] }
+    })
+  }
 
   changeLabel = (id, text) => {
     this.setState(({ todoData }) => {
-      const i = todoData.findIndex((el) => el.id === id);
-      const copy = { ...todoData[i] };
-      copy.label = text;
-      copy.date = new Date();
+      const i = todoData.findIndex((el) => el.id === id)
+      const copy = { ...todoData[i] }
+      copy.label = text
+      copy.date = new Date()
       return {
         todoData: [...todoData.slice(0, i), copy, ...todoData.slice(i + 1)],
-      };
-    });
-  };
+      }
+    })
+  }
 
   deleteItem = (id) => {
     this.setState(({ todoData }) => {
-      const i = todoData.findIndex((el) => el.id === id);
-      return { todoData: [...todoData.slice(0, i), ...todoData.slice(i + 1)] };
-    });
-  };
+      const i = todoData.findIndex((el) => el.id === id)
+      return { todoData: [...todoData.slice(0, i), ...todoData.slice(i + 1)] }
+    })
+  }
 
   clearCompleted = () => {
     this.setState(({ todoData }) => {
-      return { todoData: todoData.filter((el) => !el.done) };
-    });
-  };
+      return { todoData: todoData.filter((el) => !el.done) }
+    })
+  }
 
   changeDisplay = (val) => {
-    this.setState({ display: val });
-  };
+    this.setState({ display: val })
+  }
 
   render() {
-    const { todoData } = this.state;
+    const { todoData, display } = this.state
 
-    const doneCount = todoData.filter((el) => el.done).length;
-    const todoCount = todoData.length - doneCount;
+    const doneCount = todoData.filter((el) => el.done).length
+    const todoCount = todoData.length - doneCount
 
     const filteredData = todoData.filter((el) => {
-      switch (this.state.display) {
-        case "Active":
-          return !el.done;
-        case "Completed":
-          return el.done;
+      switch (display) {
+        case 'Active':
+          return !el.done
+        case 'Completed':
+          return el.done
         default:
-          return true;
+          return true
       }
-    });
+    })
 
     return (
       <section className="todoapp">
@@ -105,6 +102,6 @@ export default class App extends Component {
           changeDisplay={this.changeDisplay}
         />
       </section>
-    );
+    )
   }
 }
