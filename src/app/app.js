@@ -24,17 +24,19 @@ export default class App extends Component {
     todoData: [this.createTask('Completed task'), this.createTask('Editing task'), this.createTask('Active task')],
   }
 
-  createTask(label) {
+  createTask(label, mins = 1, secs = 30) {
     return {
       label,
       done: false,
       id: this.maxId++,
       date: new Date(),
+      mins: mins,
+      secs: secs,
     }
   }
 
-  addItem = (text) => {
-    const newItem = this.createTask(text)
+  addItem = (text, mins, secs) => {
+    const newItem = this.createTask(text, mins, secs)
     this.setState(({ todoData }) => {
       return { todoData: [...todoData, newItem] }
     })

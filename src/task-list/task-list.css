@@ -142,7 +142,17 @@
 }
 
 .icon-pause:after {
-	content: '⏸';
+	content: '';
+  display: block;
+  position: absolute;
+  top: 20px;
+  width: 15px;
+  height: 15px;
+  background-image: url(../../public/img/Pause-light.svg);
+}
+
+.icon-pause:hover:after {
+  background-image: url(../../public/img/Pause.svg) !important;
 }
 
 .icon-play:after {

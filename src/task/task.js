@@ -9,6 +9,9 @@ export default class Task extends Component {
   state = {
     editing: false,
     distance: formatDistanceToNow(this.props.date),
+    mins: this.props.mins,
+    secs: this.props.secs,
+    timer: true,
   }
 
   onEdit = () => {
@@ -27,13 +30,39 @@ export default class Task extends Component {
     clearInterval(this.timerID)
   }
 
+  changeTimer = () => {
+    if (!this.state.timer) {
+      return
+    }
+    let { mins, secs } = this.state
+    if (secs <= 0) {
+      if (mins == 0) {
+        return
+      }
+      mins--
+      secs = 59
+    } else {
+      secs--
+    }
+    this.setState({ mins: mins, secs: secs })
+  }
+
+  playTimer = () => {
+    this.setState({ timer: true })
+  }
+
+  pauseTimer = () => {
+    this.setState({ timer: false })
+  }
+
   tick = () => {
     this.setState({ distance: formatDistanceToNow(this.props.date) })
+    this.changeTimer()
   }
 
   render() {
     const { label, onDeleted, onToggleDone, done, changeLabel, id } = this.props
-    const { editing } = this.state
+    const { editing, mins, secs } = this.state
 
     let classNames = ''
     if (done) {
@@ -50,9 +79,11 @@ export default class Task extends Component {
           <label>
             <span className="title">{label}</span>
             <span className="description">
-              <button className="icon icon-play"></button>
-              <button className="icon icon-pause"></button>
-              <span className="timer">12:25</span>
+              <button className="icon icon-play" onClick={this.playTimer}></button>
+              <button className="icon icon-pause" onClick={this.pauseTimer}></button>
+              <span className="timer">
+                {mins}:{secs}
+              </span>
             </span>
             <span className="description">{this.state.distance} ago</span>
           </label>
