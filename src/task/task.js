@@ -11,7 +11,7 @@ export default class Task extends Component {
     distance: formatDistanceToNow(this.props.date),
     mins: this.props.mins,
     secs: this.props.secs,
-    timer: true,
+    timer: false,
   }
 
   onEdit = () => {
