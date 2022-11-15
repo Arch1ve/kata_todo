@@ -1,77 +1,70 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import './new-task-form.css'
 
-export default class NewTaskForm extends Component {
-  state = {
-    label: '',
-    mins: '',
-    secs: '',
+const NewTaskForm = ({ onItemAdded }) => {
+  const [label, setLabel] = useState('')
+  const [mins, setMins] = useState('')
+  const [secs, setSecs] = useState('')
+
+  const onLabelChange = (e) => {
+    setLabel(e.target.value)
   }
 
-  onLabelChange = (e) => {
-    this.setState({
-      label: e.target.value,
-    })
+  const onMinutesChange = (e) => {
+    setMins(e.target.value)
   }
 
-  onMinutesChange = (e) => {
-    this.setState({
-      mins: e.target.value,
-    })
+  const onSecondsChange = (e) => {
+    setSecs(e.target.value)
   }
 
-  onSecondsChange = (e) => {
-    this.setState({
-      secs: e.target.value,
-    })
-  }
-
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     if (e.key === 'Enter') {
-      const text = this.state.label || 'Unnamed task'
-      const secs = +this.state.secs
-      const mins = +this.state.mins + Math.floor(secs / 60) || 0
-      this.props.onItemAdded(text.charAt(0).toUpperCase() + text.slice(1), mins, secs % 60 || 0)
-      this.setState({ label: '', mins: '', secs: '' })
+      const text = label || 'Unnamed task'
+      const seconds = +secs
+      const minutes = +mins + Math.floor(seconds / 60) || 0
+      onItemAdded(text.charAt(0).toUpperCase() + text.slice(1), minutes, seconds % 60 || 0)
+      setLabel('')
+      setMins('')
+      setSecs('')
     }
   }
 
-  render() {
-    const { label, mins, secs } = this.state
-    return (
-      <header className="header">
-        <h1>todos</h1>
-        <form className="new-todo-form" onKeyDown={(e) => this.onSubmit(e)}>
-          <input
-            className="new-todo"
-            placeholder="Task"
-            value={label}
-            onChange={(e) => {
-              this.onLabelChange(e)
-            }}
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Min"
-            value={mins}
-            onChange={(e) => {
-              this.onMinutesChange(e)
-            }}
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Sec"
-            value={secs}
-            onChange={(e) => {
-              this.onSecondsChange(e)
-            }}
-          />
-        </form>
-      </header>
-    )
-  }
+  return (
+    <header className="header">
+      <h1>todos</h1>
+      <form className="new-todo-form" onKeyDown={(e) => onSubmit(e)}>
+        <input
+          className="new-todo"
+          placeholder="Task"
+          value={label}
+          onChange={(e) => {
+            onLabelChange(e)
+          }}
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Min"
+          value={mins}
+          onChange={(e) => {
+            onMinutesChange(e)
+          }}
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          value={secs}
+          onChange={(e) => {
+            onSecondsChange(e)
+          }}
+        />
+      </form>
+    </header>
+  )
 }
+
+export default NewTaskForm
 
 NewTaskForm.defaultProps = {
   onItemAdded: () => {},

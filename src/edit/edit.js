@@ -1,46 +1,39 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-export default class Edit extends Component {
-  state = {
-    label: this.props.label,
-    oldLabel: this.props.label,
+const Edit = ({ label, id, onLabelSubmitted, stopEditing }) => {
+  const [labelState, setLabelState] = useState(label)
+  const [oldLabelState] = useState(label)
+
+  const onLabelChange = (e) => {
+    setLabelState(e.target.value)
   }
 
-  onLabelChange = (e) => {
-    this.setState({
-      label: e.target.value,
-    })
-  }
-
-  onKeyPressed = (e) => {
+  const onKeyPressed = (e) => {
     if (e.key === 'Enter') {
-      const text = this.state.label || 'Unnamed task'
-      const { id } = this.props
-      this.props.onLabelSubmitted(id, text)
-      this.props.stopEditing()
+      const text = labelState || 'Unnamed task'
+      onLabelSubmitted(id, text)
+      stopEditing()
     }
     if (e.key === 'Escape') {
-      this.setState(({ oldLabel }) => {
-        return { label: oldLabel }
-      })
-      this.props.stopEditing()
+      setLabelState(oldLabelState)
+      stopEditing()
     }
   }
 
-  render() {
-    return (
-      <input
-        type="text"
-        className="edit"
-        value={this.state.label}
-        onChange={(e) => this.onLabelChange(e)}
-        onKeyDown={(e) => this.onKeyPressed(e)}
-        autoFocus
-      ></input>
-    )
-  }
+  return (
+    <input
+      type="text"
+      className="edit"
+      value={labelState}
+      onChange={(e) => onLabelChange(e)}
+      onKeyDown={(e) => onKeyPressed(e)}
+      autoFocus
+    ></input>
+  )
 }
+
+export default Edit
 
 Edit.defaultProps = {
   onLabelSubmitted: () => {},

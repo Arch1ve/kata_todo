@@ -1,100 +1,90 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import PropTypes from 'prop-types'
 
 import './task.css'
+
 import Edit from '../edit'
 
-export default class Task extends Component {
-  state = {
-    editing: false,
-    distance: formatDistanceToNow(this.props.date),
-    mins: this.props.mins,
-    secs: this.props.secs,
-    timer: false,
+const Task = ({ label, onDeleted, onToggleDone, done, changeLabel, id, date, mins, secs }) => {
+  const [editing, setEditing] = useState(false)
+  const [distance, setDistance] = useState(formatDistanceToNow(date))
+  const [[minutes, seconds], setTime] = useState([mins, secs])
+  const [over, setover] = useState(false)
+  const [timerOn, setTimerOn] = useState(false)
+
+  useEffect(() => {
+    const timerID = setInterval(() => tick(), 1000)
+    return () => clearInterval(timerID)
+  }, [])
+
+  const onEdit = () => {
+    setEditing(true)
   }
 
-  onEdit = () => {
-    this.setState({ editing: true })
+  const stopEditing = () => {
+    setEditing(false)
   }
 
-  stopEditing = () => {
-    this.setState({ editing: false })
-  }
-
-  componentDidMount() {
-    this.timerID = setInterval(() => this.tick(), 1000)
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timerID)
-  }
-
-  changeTimer = () => {
-    if (!this.state.timer) {
+  const changeTimer = () => {
+    if (!timerOn || over) {
       return
     }
-    let { mins, secs } = this.state
-    if (secs <= 0) {
-      if (mins == 0) {
-        return
-      }
-      mins--
-      secs = 59
+    if (minutes == 0 && seconds == 0) {
+      setover(true)
+    } else if (seconds == 0) {
+      setTime([minutes - 1, 59])
     } else {
-      secs--
+      setTime([minutes, seconds - 1])
     }
-    this.setState({ mins: mins, secs: secs })
+    console.log(minutes, seconds)
   }
 
-  playTimer = () => {
-    this.setState({ timer: true })
+  const tick = () => {
+    setDistance(formatDistanceToNow(date))
+    changeTimer()
   }
 
-  pauseTimer = () => {
-    this.setState({ timer: false })
+  const playTimer = () => {
+    setTimerOn(true)
   }
 
-  tick = () => {
-    this.setState({ distance: formatDistanceToNow(this.props.date) })
-    this.changeTimer()
+  const pauseTimer = () => {
+    setTimerOn(false)
   }
 
-  render() {
-    const { label, onDeleted, onToggleDone, done, changeLabel, id } = this.props
-    const { editing, mins, secs } = this.state
+  let classNames = ''
+  if (done) {
+    classNames += 'completed'
+  }
+  if (editing) {
+    classNames += 'editing'
+  }
 
-    let classNames = ''
-    if (done) {
-      classNames += 'completed'
-    }
-    if (editing) {
-      classNames += 'editing'
-    }
-
-    return (
-      <li className={classNames}>
-        <div className="view">
-          <input className="toggle" type="checkbox" checked={done} onChange={onToggleDone} />
-          <label>
-            <span className="title">{label}</span>
-            <span className="description">
-              <button className="icon icon-play" onClick={this.playTimer}></button>
-              <button className="icon icon-pause" onClick={this.pauseTimer}></button>
-              <span className="timer">
-                {mins}:{secs}
-              </span>
+  return (
+    <li className={classNames}>
+      <div className="view">
+        <input className="toggle" type="checkbox" checked={done} onChange={onToggleDone} />
+        <label>
+          <span className="title">{label}</span>
+          <span className="description">
+            <button className="icon icon-play" onClick={playTimer}></button>
+            <button className="icon icon-pause" onClick={pauseTimer}></button>
+            <span className="timer">
+              {minutes}:{seconds}
             </span>
-            <span className="description">{this.state.distance} ago</span>
-          </label>
-          <button className="icon icon-edit" onClick={() => this.onEdit()} />
-          <button className="icon icon-destroy" onClick={onDeleted} />
-        </div>
-        {editing ? <Edit onLabelSubmitted={changeLabel} stopEditing={this.stopEditing} label={label} id={id} /> : null}
-      </li>
-    )
-  }
+          </span>
+          <span className="description">{distance} ago</span>
+        </label>
+        <button className="icon icon-edit" onClick={() => onEdit()} />
+        <button className="icon icon-destroy" onClick={onDeleted} />
+      </div>
+      {editing ? <Edit onLabelSubmitted={changeLabel} stopEditing={stopEditing} label={label} id={id} /> : null}
+    </li>
+  )
 }
+
+export default Task
 
 Task.defaultProps = {
   label: 'Unnamed task',
