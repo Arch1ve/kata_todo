@@ -13,10 +13,15 @@ const Task = ({ label, onDeleted, onToggleDone, done, changeLabel, id, date, min
   const [over, setover] = useState(false)
   const [timerOn, setTimerOn] = useState(false)
 
+  const tick = () => {
+    setDistance(formatDistanceToNow(date))
+    changeTimer()
+  }
+
   useEffect(() => {
     const timerID = setInterval(() => tick(), 1000)
     return () => clearInterval(timerID)
-  }, [])
+  }, [tick])
 
   const onEdit = () => {
     setEditing(true)
@@ -37,12 +42,6 @@ const Task = ({ label, onDeleted, onToggleDone, done, changeLabel, id, date, min
     } else {
       setTime([minutes, seconds - 1])
     }
-    console.log(minutes, seconds)
-  }
-
-  const tick = () => {
-    setDistance(formatDistanceToNow(date))
-    changeTimer()
   }
 
   const playTimer = () => {
@@ -98,7 +97,7 @@ Task.defaultProps = {
 Task.propTypes = {
   label: PropTypes.string,
   done: PropTypes.bool,
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   date: PropTypes.object,
   onDeleted: PropTypes.func,
   onToggleDone: PropTypes.func,

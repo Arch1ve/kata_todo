@@ -1,109 +1,94 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
+import { v4 } from 'uuid'
 
 import './app.css'
 import NewTaskForm from '../new-task-form'
 import TaskList from '../task-list'
 import Footer from '../footer'
 
-export default class App extends Component {
-  maxId = 0
+const App = () => {
+  const [display, setDisplay] = useState('All')
+  const [todoData, setTodoData] = useState([
+    createTask('Completed task'),
+    createTask('Editing task'),
+    createTask('Active task'),
+  ])
 
-  onToggleDone = (id) => {
-    this.setState(({ todoData }) => {
+  const onToggleDone = (id) => {
+    setTodoData((todoData) => {
       const i = todoData.findIndex((el) => el.id === id)
       const oldItem = todoData[i]
       const newItem = { ...oldItem, done: !oldItem.done }
-      return {
-        todoData: [...todoData.slice(0, i), newItem, ...todoData.slice(i + 1)],
-      }
+      return [...todoData.slice(0, i), newItem, ...todoData.slice(i + 1)]
     })
   }
 
-  state = {
-    display: 'All',
-    todoData: [this.createTask('Completed task'), this.createTask('Editing task'), this.createTask('Active task')],
-  }
-
-  createTask(label, mins = 1, secs = 30) {
+  function createTask(label, mins = 1, secs = 30) {
     return {
       label,
       done: false,
-      id: this.maxId++,
+      id: v4(),
       date: new Date(),
       mins: mins,
       secs: secs,
     }
   }
 
-  addItem = (text, mins, secs) => {
-    const newItem = this.createTask(text, mins, secs)
-    this.setState(({ todoData }) => {
-      return { todoData: [...todoData, newItem] }
+  const addItem = (text, mins, secs) => {
+    const newItem = createTask(text, mins, secs)
+    setTodoData((todoData) => {
+      return [...todoData, newItem]
     })
   }
 
-  changeLabel = (id, text) => {
-    this.setState(({ todoData }) => {
+  const changeLabel = (id, text) => {
+    setTodoData((todoData) => {
       const i = todoData.findIndex((el) => el.id === id)
       const copy = { ...todoData[i] }
       copy.label = text
       copy.date = new Date()
-      return {
-        todoData: [...todoData.slice(0, i), copy, ...todoData.slice(i + 1)],
-      }
+      return [...todoData.slice(0, i), copy, ...todoData.slice(i + 1)]
     })
   }
 
-  deleteItem = (id) => {
-    this.setState(({ todoData }) => {
+  const deleteItem = (id) => {
+    setTodoData((todoData) => {
       const i = todoData.findIndex((el) => el.id === id)
-      return { todoData: [...todoData.slice(0, i), ...todoData.slice(i + 1)] }
+      return [...todoData.slice(0, i), ...todoData.slice(i + 1)]
     })
   }
 
-  clearCompleted = () => {
-    this.setState(({ todoData }) => {
-      return { todoData: todoData.filter((el) => !el.done) }
+  const clearCompleted = () => {
+    setTodoData((todoData) => {
+      return todoData.filter((el) => !el.done)
     })
   }
 
-  changeDisplay = (val) => {
-    this.setState({ display: val })
+  const changeDisplay = (val) => {
+    setDisplay(val)
   }
 
-  render() {
-    const { todoData, display } = this.state
+  const doneCount = todoData.filter((el) => el.done).length
+  const todoCount = todoData.length - doneCount
 
-    const doneCount = todoData.filter((el) => el.done).length
-    const todoCount = todoData.length - doneCount
+  const filteredData = todoData.filter((el) => {
+    switch (display) {
+      case 'Active':
+        return !el.done
+      case 'Completed':
+        return el.done
+      default:
+        return true
+    }
+  })
 
-    const filteredData = todoData.filter((el) => {
-      switch (display) {
-        case 'Active':
-          return !el.done
-        case 'Completed':
-          return el.done
-        default:
-          return true
-      }
-    })
-
-    return (
-      <section className="todoapp">
-        <NewTaskForm onItemAdded={this.addItem} />
-        <TaskList
-          data={filteredData}
-          onDeleted={this.deleteItem}
-          onToggleDone={this.onToggleDone}
-          changeLabel={this.changeLabel}
-        />
-        <Footer
-          todo={todoCount}
-          display={this.state.display}
-          clearCompleted={this.clearCompleted}
-          changeDisplay={this.changeDisplay}
-        />
-      </section>
-    )
-  }
+  return (
+    <section className="todoapp">
+      <NewTaskForm onItemAdded={addItem} />
+      <TaskList data={filteredData} onDeleted={deleteItem} onToggleDone={onToggleDone} changeLabel={changeLabel} />
+      <Footer todo={todoCount} display={display} clearCompleted={clearCompleted} changeDisplay={changeDisplay} />
+    </section>
+  )
 }
+
+export default App
